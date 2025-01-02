@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'authentication.apps.AuthenticationConfig',
     'lead.apps.LeadConfig',
+    
 
      #third party
     'rest_framework',
