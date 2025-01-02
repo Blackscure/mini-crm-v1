@@ -19,6 +19,7 @@ SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = ['*']
+AUTH_USER_MODEL='authentication.User'
 
 
 # Application definition
@@ -102,8 +103,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
-# AUTH_USER_MODEL = "users.User"
 
 
 SIMPLE_JWT = {
