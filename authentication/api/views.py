@@ -1,4 +1,4 @@
-from authentication.api.serializers import RegisterSerializer, UserSerializer
+from authentication.api.serliazers import RegisterSerializer, UserSerializer
 from authentication.models import User
 from rest_framework import  permissions, views, status
 from rest_framework.response import Response # type: ignore
@@ -10,7 +10,7 @@ from django.contrib.auth import authenticate
 from rest_framework.views import APIView
 from django.db import IntegrityError
 from rest_framework.permissions import IsAuthenticated # type: ignore
-from role.models import Role
+
 
 from django.contrib.auth import get_user_model
 
