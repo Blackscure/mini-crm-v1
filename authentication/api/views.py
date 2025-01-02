@@ -33,20 +33,11 @@ class RegisterAPIView(APIView):
                     'errors': serializer.errors
                 }, status=status.HTTP_400_BAD_REQUEST)
 
+            # Extract data
             first_name = data.get('first_name')
             last_name = data.get('last_name')
             email = data.get('email')
             password = data.get('password')
-            user_type_id = data.get('user_type_id')
-
-            # Check if user_type exists in Role model using ID
-            try:
-                user_type = Role.objects.get(id=user_type_id)
-            except Role.DoesNotExist:
-                return Response({
-                    'status': False,
-                    'message': 'Invalid user type. Choose a valid role.'
-                }, status=status.HTTP_400_BAD_REQUEST)
 
             # Additional validation checks
             if not email:
@@ -64,13 +55,12 @@ class RegisterAPIView(APIView):
             if not password:
                 return Response({'status': False, 'message': 'Password cannot be empty'}, status=status.HTTP_400_BAD_REQUEST)
 
-            # Create the user with the validated role
+            # Create the user
             user = User.objects.create(
                 username=email,
                 first_name=first_name,
                 last_name=last_name,
                 email=email,
-                user_type=user_type  # Set user_type as Role instance
             )
             user.set_password(password)
             user.save()
@@ -88,7 +78,6 @@ class RegisterAPIView(APIView):
                 'status': False,
                 'message': 'An error occurred during registration'
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
 
 class LoginApiView(APIView):
     def post(self, request):
