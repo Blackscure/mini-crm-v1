@@ -1,29 +1,28 @@
+from rest_framework.permissions import IsAuthenticated
 from contact.api.serializers import ContactSerializer
 from contact.models import Contact
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from utils.paginator import CustomPaginator
 
 
 
 class ContactListCreateAPIView(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         try:
             contacts = Contact.objects.all()
-            serializer = ContactSerializer(contacts, many=True)
-            return Response({
-                'success': True,
-                'message': 'Contacts retrieved successfully',
-                'count': contacts.count(),
-                'data': serializer.data
-            }, status=status.HTTP_200_OK)
+            paginator = CustomPaginator()
+            paginated_contacts = paginator.paginate_queryset(contacts, request)
+            serializer = ContactSerializer(paginated_contacts, many=True)
+            return paginator.get_paginated_response(serializer.data)
         except Exception as e:
             return Response({
                 'success': False,
                 'message': f'An error occurred: {str(e)}',
                 'data': []
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
     def post(self, request):
         try:
             serializer = ContactSerializer(data=request.data)
@@ -47,6 +46,7 @@ class ContactListCreateAPIView(APIView):
 
 
 class ContactDetailAPIView(APIView):
+    permission_classes = [IsAuthenticated]
     def get_object(self, pk):
         try:
             return Contact.objects.get(pk=pk)
