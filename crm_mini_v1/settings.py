@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'authentication.apps.AuthenticationConfig',
     'lead.apps.LeadConfig',
     'contact.apps.ContactConfig',
+    'notes.apps.NotesConfig',
     
 
      #third party
