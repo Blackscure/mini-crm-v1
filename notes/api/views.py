@@ -3,6 +3,7 @@ from notes.models import Note
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from utils.paginator import CustomPaginator
 from .serializers import NoteSerializer
 
 class NoteListCreateAPIView(APIView):
@@ -10,26 +11,16 @@ class NoteListCreateAPIView(APIView):
     def get(self, request):
         try:
             notes = Note.objects.all()
-            if notes.exists():
-                serializer = NoteSerializer(notes, many=True)
-                return Response({
-                    'success': True,
-                    'message': 'Notes retrieved successfully',
-                    'data': serializer.data
-                }, status=status.HTTP_200_OK)
-            else:
-                return Response({
-                    'success': True,
-                    'message': 'No notes found',
-                    'data': []
-                }, status=status.HTTP_200_OK)
+            paginator = CustomPaginator()
+            paginated_notes = paginator.paginate_queryset(notes, request)
+            serializer = NoteSerializer(paginated_notes, many=True)
+            return paginator.get_paginated_response(serializer.data)
         except Exception as e:
             return Response({
                 'success': False,
                 'message': f'An error occurred: {str(e)}',
                 'data': []
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
     def post(self, request):
         try:
             serializer = NoteSerializer(data=request.data)
