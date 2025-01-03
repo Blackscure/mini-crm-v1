@@ -1,3 +1,4 @@
+from rest_framework.permissions import IsAuthenticated
 from contact.api.serializers import ContactSerializer
 from contact.models import Contact
 from rest_framework.views import APIView
@@ -7,6 +8,7 @@ from rest_framework import status
 
 
 class ContactListCreateAPIView(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         try:
             contacts = Contact.objects.all()
@@ -47,6 +49,7 @@ class ContactListCreateAPIView(APIView):
 
 
 class ContactDetailAPIView(APIView):
+    permission_classes = [IsAuthenticated]
     def get_object(self, pk):
         try:
             return Contact.objects.get(pk=pk)
