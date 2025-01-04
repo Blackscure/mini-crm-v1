@@ -183,29 +183,16 @@ class GetUserView(views.APIView):
 
     def get(self, request):
         try:
-            # Fetch user_type and print it for debugging
-            user_role = getattr(request.user, 'user_type', None)
-            user_role_name = getattr(user_role, 'role_name', None)  # Get the role name if it exists
-            print(f"Authenticated User: {request.user.username}, User Role: {user_role_name}")
+            # Retrieve all users
+            users = User.objects.all()
 
-            # Check if the user has a role of 'Admin'
-            if user_role_name == 'Admin':
-                # Retrieve all users if the check passes
-                users = User.objects.all()
+            # Apply custom pagination
+            paginator = CustomPaginator()
+            paginated_users = paginator.paginate_queryset(users, request, view=self)
+            serializer = UserSerializer(paginated_users, many=True)
 
-                # Apply custom pagination
-                paginator = CustomPaginator()
-                paginated_users = paginator.paginate_queryset(users, request, view=self)
-                serializer = UserSerializer(paginated_users, many=True)
-
-                # Return paginated response
-                return paginator.get_paginated_response(serializer.data)
-            else:
-                # If user_role is not 'Admin', deny access
-                return Response({
-                    "status": False,
-                    "message": "Access denied"
-                }, status=403)
+            # Return paginated response
+            return paginator.get_paginated_response(serializer.data)
 
         except Exception as e:
             # Handle unexpected errors
@@ -213,7 +200,6 @@ class GetUserView(views.APIView):
                 'status': False,
                 'message': f'An error occurred: {str(e)}'
             }, status=500)
-
 
 
 class EditUserAPIView(APIView):
