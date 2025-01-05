@@ -113,7 +113,8 @@ class LeadDetailAPIView(APIView):
             if lead is None:
                 return Response({'error': 'Lead not found'}, status=status.HTTP_404_NOT_FOUND)
 
-            serializer = LeadSerializer(lead, data=request.data, context={'request': request})
+            # Use partial=True to allow partial updates
+            serializer = LeadSerializer(lead, data=request.data, partial=True, context={'request': request})
             if serializer.is_valid():
                 serializer.save()
                 return Response({
@@ -130,36 +131,9 @@ class LeadDetailAPIView(APIView):
         except Exception as e:
             return Response({
                 'success': False,
-                'message': f'An error occurred: {str(e)}',
-                'data': []
+                'message': 'An error occurred',
+                'error': str(e)
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-    def patch(self, request, pk):
-        try:
-            lead = self.get_object(pk)
-            if isinstance(lead, dict):  
-                return Response({
-                    'success': False,
-                    'message': lead['error'],
-                    'data': []
-                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-            
-            if lead is None:
-                return Response({'error': 'Lead not found'}, status=status.HTTP_404_NOT_FOUND)
-
-            serializer = LeadSerializer(lead, data=request.data, partial=True, context={'request': request})
-            if serializer.is_valid():
-                serializer.save()
-                return Response({
-                    'success': True,
-                    'message': 'Lead partially updated successfully',
-                    'data': serializer.data
-                }, status=status.HTTP_200_OK)
-            return Response({
-                'success': False,
-                'message': 'Invalid data',
-                'errors': serializer.errors
-            }, status=status.HTTP_400_BAD_REQUEST)
 
         except Exception as e:
             return Response({
@@ -167,6 +141,8 @@ class LeadDetailAPIView(APIView):
                 'message': f'An error occurred: {str(e)}',
                 'data': []
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+   
 
     def delete(self, request, pk):
         try:
