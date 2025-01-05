@@ -4,18 +4,10 @@ from pathlib import Path
 from datetime import timedelta
 from decouple import config, Csv
 
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config('SECRET_KEY')
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = ['*']
@@ -35,6 +27,7 @@ INSTALLED_APPS = [
     'lead.apps.LeadConfig',
     'contact.apps.ContactConfig',
     'notes.apps.NotesConfig',
+    'reminders.apps.RemindersConfig',
     
 
      #third party
@@ -74,9 +67,13 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
-CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_ALLOW_ALL = False
+CORS_ORIGIN_WHITELIST = (
+  'http://localhost:5173',
+)
 ROOT_URLCONF = 'crm_mini_v1.urls'
 
 TEMPLATES = [
@@ -107,6 +104,12 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# Celery settings
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+
 
 
 SIMPLE_JWT = {
@@ -171,7 +174,8 @@ TIME_ZONE = 'Africa/Nairobi'
 
 USE_I18N = True
 
-USE_TZ = False
+USE_TZ = True
+
 
 
 # Static files (CSS, JavaScript, Images)
