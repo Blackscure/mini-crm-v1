@@ -25,7 +25,7 @@ class ReminderView(APIView):
                 message=message,
                 scheduled_time=scheduled_time,
             )
-            delay_time = (reminder.scheduled_time - now()).total_seconds() # type: ignore
+            delay_time = (reminder.scheduled_time - now()).total_seconds() 
             send_reminder.apply_async(args=[reminder.id], countdown=max(0, delay_time))
 
             return Response({"success": "Reminder scheduled successfully!"}, status=status.HTTP_201_CREATED)
