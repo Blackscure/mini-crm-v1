@@ -3,19 +3,19 @@ from django.utils.timezone import now
 from django.core.mail import send_mail
 
 from reminders.models import Reminder
-
 @shared_task
 def send_reminder(reminder_id):
     try:
         reminder = Reminder.objects.get(id=reminder_id, is_sent=False)
-        # Simulate sending an email
+        # Log reminder details
+        print(f"Sending reminder: {reminder.message} to {reminder.lead.email}")
+        
         send_mail(
             subject="Reminder Notification",
             message=reminder.message,
             from_email="wekesabuyahi.com",
-            recipient_list=["wekesabuyahi.com"], 
+            recipient_list=["wekesabuyahi.com"],
         )
-        # Mark as sent
         reminder.is_sent = True
         reminder.save()
     except Reminder.DoesNotExist:
